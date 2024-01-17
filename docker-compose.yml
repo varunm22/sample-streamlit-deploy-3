@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  streamlit:
+    image: 724819293261.dkr.ecr.us-east-1.amazonaws.com/img_name
+    command: code_package/streamlit/start.sh
+    platform: linux/amd64
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./code_package/:/app/code_package/
+      - ~/.aws/:/root/.aws/
+
+  streamlit-local:
+    image: img_name:latest
+    command: code_package/streamlit/start.sh
+    platform: linux/amd64
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./code_package/:/app/code_package/
+      - ~/.aws/:/root/.aws/
+
+  shell:
+    image: 724819293261.dkr.ecr.us-east-1.amazonaws.com/img_name
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+    command: /bin/bash
+    platform: linux/amd64
+    volumes:
+      - ./code_package/:/app/code_package/
+      - ~/.aws/:/root/.aws/
+
+  shell-local:
+    image: img_name:latest
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+    command: /bin/bash
+    platform: linux/amd64
+    volumes:
+      - ./code_package/:/app/code_package/
+      - ~/.aws/:/root/.aws/
