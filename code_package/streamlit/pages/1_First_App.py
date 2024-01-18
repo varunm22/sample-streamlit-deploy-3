@@ -21,7 +21,7 @@ if action == "Launch Job":
         timestamp = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())
         job_dir = os.path.join(RESULTS_DIR, timestamp + "_" + job_name)
         job_id = submit_batch_job(
-            f"python code_package/countdown/countdown.py {seconds}",
+            f"python code_package/countdown/countdown.py {seconds} {job_dir}",
             job_name,
         )
         write_yml_to_s3(

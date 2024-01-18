@@ -6,3 +6,4 @@ dependencies:
   - boto3
   - pandas
   - pyyaml
+  - s3fs
