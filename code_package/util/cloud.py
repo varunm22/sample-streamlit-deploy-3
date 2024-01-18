@@ -5,7 +5,6 @@ from yaml.loader import SafeLoader
 
 
 def get_aws_parameter(key):
-    # session = boto3.session.Session(profile_name="personal", region_name="us-east-1")
     session = boto3.session.Session()
     ssm = session.client("ssm")
     response = ssm.get_parameter(Name=key, WithDecryption=True)
@@ -23,8 +22,7 @@ def s3_uri_from_bucket_key(bucket: str, key: str) -> str:
 
 
 def read_yml_from_s3(s3_uri: str):
-    session = boto3.session.Session(profile_name="personal", region_name="us-east-1")
-    # session = boto3.session.Session()
+    session = boto3.session.Session()
     s3 = session.client("s3")
     bucket, key = bucket_key_from_s3_uri(s3_uri)
     response = s3.get_object(Bucket=bucket, Key=key)
@@ -32,16 +30,14 @@ def read_yml_from_s3(s3_uri: str):
 
 
 def write_yml_to_s3(yml: dict, s3_uri: str):
-    session = boto3.session.Session(profile_name="personal", region_name="us-east-1")
-    # session = boto3.session.Session()
+    session = boto3.session.Session()
     s3 = session.client("s3")
     bucket, key = bucket_key_from_s3_uri(s3_uri)
     s3.put_object(Bucket=bucket, Key=key, Body=yaml.dump(yml))
 
 
 def s3_ls(s3_uri: str) -> List[str]:
-    session = boto3.session.Session(profile_name="personal", region_name="us-east-1")
-    # session = boto3.session.Session()
+    session = boto3.session.Session()
     s3 = session.client("s3")
     objects = []
     bucket, key = bucket_key_from_s3_uri(s3_uri)
