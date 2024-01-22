@@ -38,7 +38,8 @@ elif action == "Check Job Status":
             st.write(f"Job name: {job_info['job_name']}")
             st.write(f"Status: {get_job_status(job_info['job_id'])}")
             try:
-                results = pd.read_csv(job + "seconds.csv")
-                st.write(f"Results: {results}")
+                results = pd.read_csv(job + "seconds.csv", index_col=0)
+                st.write(f"Results:")
+                st.dataframe(results)
             except:
                 st.write("Results missing or unreadable")
