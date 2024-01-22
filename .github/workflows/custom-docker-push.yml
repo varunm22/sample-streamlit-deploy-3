@@ -1,0 +1,55 @@
+name: Custom Docker Image
+
+on: issue_comment
+
+jobs:
+  build-and-push:
+    name: Push Custom Docker Image
+    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '/push') }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout pull request
+      uses: actions/checkout@v3
+      with:
+        ref: refs/pull/${{ github.event.issue.number }}/head
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Extract GitHub username
+      id: extract-username
+      run: echo "::set-output name=username::$(echo $GITHUB_ACTOR | tr '[:upper:]' '[:lower:]')"
+
+    - name: Build and push Docker image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
+        GITHUB_USERNAME: ${{ steps.extract-username.outputs.username }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_USERNAME .
+        echo "Pushing image to ECR..."
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_USERNAME
+        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_USERNAME"
+
+    - name: comment on PR
+      env: 
+        ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
+        GITHUB_USERNAME: ${{ steps.extract-username.outputs.username }}
+      uses: actions/github-script@v5
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `Pushed custom image to ${process.env.ECR_REPOSITORY}:${process.env.GITHUB_USERNAME}`
+          })

@@ -2,9 +2,14 @@ import boto3
 from typing import Dict, List
 
 
-def submit_batch_job(command: str, job_name: str, dependencies: List[str] = []):
+def submit_batch_job(
+    command: str, job_name: str, dependencies: List[str] = [], tag=None
+):
     session = boto3.session.Session()
     batch = session.client("batch")
+    job_definition = "sm-job"
+    if tag:
+        job_definition = f"{job_definition}-{tag}"
     submit_job_response = batch.submit_job(
         jobName=job_name,
         jobQueue="sm-queue",
