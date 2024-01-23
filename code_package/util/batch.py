@@ -13,7 +13,7 @@ def submit_batch_job(
     submit_job_response = batch.submit_job(
         jobName=job_name,
         jobQueue="sm-queue",
-        jobDefinition="sm-job",
+        jobDefinition=job_definition,
         containerOverrides={"command": command.split(" ")},
         dependsOn=[{"jobId": dep, "type": "N_TO_N"} for dep in dependencies],
     )

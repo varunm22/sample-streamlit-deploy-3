@@ -13,4 +13,6 @@ for i in range(args.seconds, 0, -1):
     time.sleep(1)
 print("Countdown finished")
 
-pd.DataFrame({"seconds": [args.seconds]}).to_csv(args.output_dir + "/seconds.csv")
+pd.DataFrame({"seconds": [args.seconds]}).to_csv(
+    args.output_dir + "/seconds.csv", index=False
+)
